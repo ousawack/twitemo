@@ -3,11 +3,13 @@ import Head from "next/head";
 // import Link from "next/link";
 import { SignIn, UserButton, useUser } from "@clerk/nextjs";
 import { SignInButton } from "@clerk/nextjs";
-// import { api } from "~/utils/api";
+import { api } from "~/utils/api";
 
 const Home: NextPage = () => {
-  // const hello = api.example.hello.useQuery({ text: "from tRPC" });
-  const user = useUser()
+  const { data } = api.posts.getAll.useQuery();
+
+  const user = useUser();
+
   return (
     <>
       <Head>
@@ -16,9 +18,23 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-        <div className="text-lg text-white font-semibold">{!user.isSignedIn && <SignInButton />}</div>
-        <div className="text-lg text-white font-semibold">{!!user.isSignedIn && <UserButton />}</div>
-      <SignIn path="/sign-in" routing="path" signUpUrl="/sign-up" />
+        <div className="text-lg font-semibold text-white">
+          {!user.isSignedIn && <SignInButton />}
+        </div>
+        <div className="text-lg font-semibold text-white">
+          {!!user.isSignedIn && <UserButton />}
+        </div>
+        <SignIn path="/sign-in" routing="path" signUpUrl="/sign-up" />
+        <div>
+          {data?.map((post) => (
+            <div
+              className="my-5 text-lg font-semibold text-white"
+              key={post.id}
+            >
+              {post.content}
+            </div>
+          ))}
+        </div>
       </main>
     </>
   );
